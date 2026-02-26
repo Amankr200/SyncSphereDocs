@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -25,6 +26,9 @@ const Register = () => {
     return (
         <div className="auth-page">
             <div className="auth-card">
+                <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '2rem' }}>
+                    <Logo size={40} />
+                </Link>
                 <h2>Create Account</h2>
                 <p className="auth-subtitle">Get started with SyncSphereDocs today</p>
 

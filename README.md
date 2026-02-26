@@ -1,93 +1,135 @@
-# Real-Time Collaboration App (Google Docs Clone)
+# SyncSphereDocs | Real-Time Collaborative Workspace
 
-A scalable, real-time collaborative document editing system built with the MERN stack and Socket.io. This application allows multiple users to edit documents simultaneously with distinct user presence, typing indicators, and granular permission controls.
+![SyncSphereDocs Banner](https://images.unsplash.com/photo-1512486133939-0c44c0ca9ddb?q=80&w=1200&auto=format&fit=crop)
 
-## 🚀 Key Features
+**SyncSphereDocs** is a premium, high-performance real-time collaborative document editing platform. Built with a modern MERN stack and optimized Socket.io communication, it provides a seamless "Google Docs-like" experience with advanced presence tracking and granular permission controls.
 
-*   **Real-Time Collaboration**: Multiple users can edit the same document concurrently with changes syncing instantly.
-*   **User Authentication**: Secure JWT-based sign-up and login system.
-*   **Document Dashboard**: Manage all your documents in one place with a clean grid view.
-*   **Live User Presence**: See who is currently viewing the document with real-time "Online" badges.
-*   **Typing Indicators**: Visual feedback when other users are typing (e.g., *"Aman is typing..."*).
-*   **Link Sharing & Permissions**:
-    *   **Edit Mode**: Anyone with the link can edit the document.
-    *   **View Only Mode**: Owners can lock the document to "View Only" for all other users.
-*   **Auto-Save**: All changes are automatically persisted to MongoDB in real-time.
+---
 
-## 🛠️ Tech Stack
+## ✨ Features that Wow
 
-*   **Frontend**: React, Vite, Quill.js, Socket.io Client
-*   **Backend**: Node.js, Express, Socket.io, MongoDB, Mongoose
-*   **Authentication**: JSON Web Tokens (JWT), Bcrypt
-*   **Styling**: Vanilla CSS (Clean and responsive design)
+*   **⚡ Lightning-Fast Collaboration**: Syncing changes across multiple clients in real-time with zero latency using optimized WebSocket communication.
+*   **🛡️ Secure Authentication**: Robust JWT-based authentication system with encrypted password hashing and protected API routes.
+*   **🎨 Premium Dashboard**: A sleek, modern document management interface with dynamic grid layouts and instant document creation.
+*   **👥 Advanced Presence Tracking**:
+    *   **Live User Badges**: See exactly who is online in your document.
+    *   **Typing Indicators**: Real-time visual feedback ("Aman is typing...") for active collaborators.
+    *   **Cursor Tracking**: (Coming Soon) Precision tracking of collaborator focus within the document.
+*   **🔒 Intelligent Permissions**: 
+    *   **Owner-Only Control**: Toggle between "Anyone can Edit" and "Anyone can View" instantly.
+    *   **Dynamic UI Locking**: Non-owners are automatically restricted from editing when view-only mode is active.
+*   **💾 Enterprise-Grade Auto-Save**: Background persistence to MongoDB Atlas ensures you never lose a single keystroke.
 
-## 📦 Getting Started
+---
+
+## 🛠️ Modern Tech Stack
+
+*   **Frontend**: 
+    *   [React](https://reactjs.org/) - Component-based architecture
+    *   [Vite](https://vitejs.dev/) - Ultra-fast build tool
+    *   [Quill.js](https://quilljs.com/) - Rich text editor core
+    *   [Socket.io-client](https://socket.io/) - Real-time client communication
+*   **Backend**: 
+    *   [Node.js](https://nodejs.org/) & [Express](https://expressjs.com/) - High-performance server
+    *   [Socket.io](https://socket.io/) - Bidirectional event-based communication
+    *   [MongoDB Atlas](https://www.mongodb.com/atlas) - Distributed cloud database
+    *   [Mongoose](https://mongoosejs.com/) - Elegant data modeling
+*   **Security**: 
+    *   JSON Web Tokens (JWT) for stateless session management
+    *   BcryptJS for secure password hashing
+    *   CORS protection with dynamic origin trust
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-*   Node.js (v14+)
-*   MongoDB (running locally on default port `27017`)
+*   **Node.js** (v18.0.0 or higher)
+*   **MongoDB Atlas Account** (or a local MongoDB instance)
 
 ### Installation
 
-1.  **Clone the repository** (if applicable)
-2.  **Install Backend Dependencies**:
+1.  **Clone the Repository**:
     ```bash
-    cd server
-    npm install
-    ```
-3.  **Install Frontend Dependencies**:
-    ```bash
-    cd client
-    npm install
+    git clone https://github.com/Amankr200/SyncSphereDocs.git
+    cd SyncSphereDocs
     ```
 
-### Running the Application
+2.  **Configure Backend**:
+    *   Navigate to `/server` and create a `.env` file:
+    ```env
+    MONGODB_URI=your_mongodb_atlas_connection_string
+    JWT_SECRET=your_strong_secret_key
+    PORT=3001
+    FRONTEND_URL=http://localhost:5173
+    ```
+    *   Install dependencies: `npm install`
 
-1.  **Start MongoDB**: Ensure your local MongoDB instance is running (`mongod`).
-2.  **Start Backend Server**:
+3.  **Configure Frontend**:
+    *   Navigate to `/client` and create a `.env` file:
+    ```env
+    VITE_API_URL=http://localhost:3001/api
+    VITE_SOCKET_URL=http://localhost:3001
+    ```
+    *   Install dependencies: `npm install`
+
+### Running Locally
+
+1.  **Start the Backend Engine**:
     ```bash
     cd server
     npm run dev
-    # Server runs on http://localhost:3001
     ```
-3.  **Start Frontend Client**:
+
+2.  **Launch the Frontend Interface**:
     ```bash
     cd client
     npm run dev
-    # Client runs on http://localhost:5173
     ```
 
-## 📖 Usage Guide
+---
 
-1.  **Registration**: Open `http://localhost:5173` and create an account.
-2.  **Dashboard**: After login, you will see your document dashboard. Click **+ New Document** to start.
-3.  **Editing**: Type in the editor. Your changes are saved automatically.
-4.  **Collaboration**:
-    *   Copy the URL and share it with a friend (or open in an Incognito window).
-    *   Log in as a different user to see the real-time presence and typing indicators.
-5.  **Sharing Permissions**:
-    *   As the **Owner**, use the dropdown in the top-right to switch between **Anyone can Edit** and **Anyone can View**.
-    *   Notice how other users' editors become disabled instantly when "View" mode is selected.
+## 📂 Architecture Overview
 
-## 📂 Project Structure
-
-```
-/
-├── client/                 # React Frontend
+```text
+SyncSphereDocs/
+├── client/                 # React UI Layer
 │   ├── src/
-│   │   ├── api/            # Axios setup & Interceptors
-│   │   ├── components/     # Reusable components (PrivateRoute)
-│   │   ├── context/        # Auth Context Provider
-│   │   ├── pages/          # Login, Register, Dashboard
-│   │   ├── TextEditor.jsx  # Main Editor with Socket logic
-│   │   └── style.css       # Global styles
-│   └── ...
-└── server/                 # Node.js Backend
-    ├── config/             # Configuration files
-    ├── controllers/        # (Optional) Route controllers
-    ├── middleware/         # Auth & Logging middleware
-    ├── models/             # Mongoose Models (User, Document)
-    ├── routes/             # API Routes (Auth, Documents)
-    └── server.js           # Main Entry Point & Socket.io Logic
+│   │   ├── api/            # Centralized API Interceptors
+│   │   ├── context/        # Global Auth & State Management
+│   │   ├── pages/          # Premium Page Components
+│   │   └── TextEditor.jsx  # Real-Time Engine Integration
+├── server/                 # Node.js Core Backend
+│   ├── config/             # DB & Socket configurations
+│   ├── models/             # Schema Definitions (User, Doc)
+│   ├── routes/             # RESTful API Endpoints
+│   └── server.js           # Shared Socket Room Logic
+└── README.md
 ```
+
+---
+
+## 🧩 Troubleshooting & Resilience
+
+**Stuck on "Loading..."?**
+We've implemented a **dual-retry mechanism**:
+1.  The client now prefers **WebSockets** for better performance.
+2.  If the editor stays on "Loading..." for more than 5 seconds, it automatically re-pings the server to fetch the latest document state.
+3.  Ensure your backend is running (`node server.js`) and MongoDB Atlas is accessible.
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+*Built with ❤️ by [Aman](https://github.com/Amankr200)*

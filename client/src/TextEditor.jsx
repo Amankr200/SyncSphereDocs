@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from "react"
 import Quill from "quill"
 import "quill/dist/quill.snow.css"
 import { io } from "socket.io-client"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
+import Logo from "./components/Logo"
 
 const SAVE_INTERVAL_MS = 2000
 const TOOLBAR_OPTIONS = [
@@ -239,9 +240,10 @@ export default function TextEditor() {
     return (
         <div className="text-editor-layout" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div className="active-users-bar">
-                <a href="/dashboard" className="btn btn-secondary" style={{ marginRight: '1rem', padding: '0.4rem 0.8rem' }}>
-                    ← Dashboard
-                </a>
+                <Link to="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', marginRight: '1.5rem' }}>
+                    <Logo size={24} showText={false} />
+                    <span style={{ marginLeft: '0.5rem', fontWeight: '600', color: 'var(--text-main)', fontSize: '0.9rem' }}>Dashboard</span>
+                </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     {activeUsers.map((u, i) => (

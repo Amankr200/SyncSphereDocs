@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function LandingPage() {
     const { user } = useAuth();
@@ -13,9 +14,9 @@ export default function LandingPage() {
     return (
         <div className="dashboard-layout"> {/* Reusing layout structure for consistency */}
             <nav className="dashboard-nav">
-                <div className="nav-brand">
-                    <span>📄</span> SyncSphereDocs
-                </div>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                    <Logo />
+                </Link>
                 <div>
                     <Link to="/login" className="btn btn-secondary" style={{ marginRight: '10px' }}>Log In</Link>
                     <Link to="/register" className="btn btn-primary">Sign Up</Link>

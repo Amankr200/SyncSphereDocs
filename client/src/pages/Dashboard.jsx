@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function Dashboard() {
     const [documents, setDocuments] = useState([]);
@@ -45,9 +46,9 @@ export default function Dashboard() {
     return (
         <div className="dashboard-layout">
             <nav className="dashboard-nav">
-                <div className="nav-brand">
-                    <span>📄</span> SyncSphereDocs
-                </div>
+                <Link to="/dashboard" style={{ textDecoration: 'none' }}>
+                    <Logo />
+                </Link>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{user?.name}</span>
                     <button onClick={logout} className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Logout</button>
