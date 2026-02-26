@@ -31,7 +31,8 @@ export default function TextEditor() {
 
     useEffect(() => {
         const token = localStorage.getItem('token')
-        const s = io("http://localhost:3001", {
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+        const s = io(socketUrl, {
             auth: { token }
         })
         setSocket(s)

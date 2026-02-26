@@ -1,3 +1,4 @@
+require('dotenv').config()
 const mongoose = require("mongoose")
 const Document = require("./models/Document")
 const User = require("./models/User")
@@ -11,7 +12,11 @@ const { createClient } = require("redis")
 const { createAdapter } = require("@socket.io/redis-adapter")
 
 const app = express()
-app.use(cors())
+app.use(cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+}))
 app.use(express.json({ extended: false }))
 
 // Logging Middleware
@@ -21,7 +26,8 @@ app.use((req, res, next) => {
 });
 
 // Connect to Database
-mongoose.connect("mongodb://127.0.0.1:27017/google-docs-clone")
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/google-docs-clone";
+mongoose.connect(MONGODB_URI)
     .then(() => console.log("Connected to MongoDB"))
     .catch(err => console.error("MongoDB connection error:", err));
 
@@ -32,20 +38,21 @@ app.use('/api/documents', require('./routes/documents'));
 const server = http.createServer(app)
 const io = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: process.env.FRONTEND_URL || "http://localhost:5173",
         methods: ["GET", "POST"],
     },
 })
 
 // Redis Adapter Setup
-const pubClient = createClient({ url: 'redis://localhost:6379' });
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const pubClient = createClient({ url: REDIS_URL });
 const subClient = pubClient.duplicate();
 
 Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     io.adapter(createAdapter(pubClient, subClient));
     console.log("Redis Adapter connected");
 }).catch(err => {
-    console.warn("Redis connection failed. Using in-memory adapter instead.");
+    console.warn("Redis connection failed or not provided. Using in-memory adapter instead.");
 });
 
 
