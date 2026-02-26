@@ -83,11 +83,23 @@ io.on("connection", socket => {
     // Fetch user details immediately to have their name ready
     User.findById(socket.user.id).select('name').then(user => {
         socket.userInfo = user;
+        // If they are already in a document room, update their presence name
+        for (const [docId, users] of documentUsers.entries()) {
+            if (users.has(socket.id)) {
+                users.get(socket.id).name = user.name;
+                io.to(docId).emit("active-users", Array.from(users.values()));
+            }
+        }
     });
 
     socket.on("get-document", async documentId => {
+        console.log(`Getting document: ${documentId} for user: ${socket.user.id}`);
         try {
             const document = await findOrCreateDocument(documentId, socket.user.id);
+            if (!document) {
+                console.log(`Document ${documentId} could not be found or created.`);
+                return;
+            }
 
             socket.join(documentId);
             socket.emit("load-document", {
@@ -97,6 +109,7 @@ io.on("connection", socket => {
                 shareMode: document.shareMode || 'edit',
                 currentUser: socket.user.id
             });
+            console.log(`Document ${documentId} loaded and emitted to client`);
 
             // Track user presence (Local only for now)
             if (!documentUsers.has(documentId)) {
@@ -175,7 +188,8 @@ io.on("connection", socket => {
             });
 
         } catch (e) {
-            console.error("Error in get-document", e);
+            console.error(`Error in get-document for ${documentId}:`, e);
+            socket.emit("error", "Failed to load document");
         }
     });
 });
@@ -183,15 +197,21 @@ io.on("connection", socket => {
 async function findOrCreateDocument(id, userId) {
     if (id == null) return
 
-    const document = await Document.findById(id)
-    if (document) return document
+    try {
+        const document = await Document.findById(id)
+        if (document) return document
 
-    return await Document.create({
-        _id: id,
-        data: defaultValue,
-        owner: userId,
-        title: "Untitled Document"
-    })
+        console.log(`Creating new document: ${id}`);
+        return await Document.create({
+            _id: id,
+            data: defaultValue,
+            owner: userId,
+            title: "Untitled Document"
+        })
+    } catch (err) {
+        console.error("Database error in findOrCreateDocument:", err);
+        throw err;
+    }
 }
 
 const PORT = process.env.PORT || 3001;

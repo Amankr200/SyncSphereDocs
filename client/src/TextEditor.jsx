@@ -35,6 +35,10 @@ export default function TextEditor() {
         const s = io(socketUrl, {
             auth: { token }
         })
+
+        s.on("connect", () => console.log("Socket connected:", s.id))
+        s.on("connect_error", (err) => console.error("Socket connection error:", err.message))
+
         setSocket(s)
 
         return () => {
@@ -45,7 +49,9 @@ export default function TextEditor() {
     useEffect(() => {
         if (socket == null || quill == null) return
 
-        socket.once("load-document", ({ data, title, owner, shareMode, currentUser }) => {
+        const handler = (docPayload) => {
+            console.log("Document payload received:", docPayload.title)
+            const { data, title, owner, shareMode, currentUser } = docPayload
             quill.setContents(data)
             setShareMode(shareMode)
             setTitle(title)
@@ -55,11 +61,12 @@ export default function TextEditor() {
 
             if (shareMode === 'view' && !isUserOwner) {
                 quill.disable()
-                quill.setText(' (View Only)\n' + quill.getText())
             } else {
                 quill.enable()
             }
-        })
+        }
+
+        socket.on("load-document", handler)
 
         socket.on("active-users", users => {
             setActiveUsers(users)
@@ -67,15 +74,37 @@ export default function TextEditor() {
 
         socket.on("permission-updated", (newMode) => {
             setShareMode(newMode)
-            if (newMode === 'view' && !isOwner) {
-                quill.disable()
+            // We need to re-check ownership here, but since isOwner is stable for the component life
+            // after the first load-document, we can use it.
+            if (newMode === 'view') {
+                // re-fetch isOwner from closure or state if needed, 
+                // but easier to check against currentUser if we stored it
+                // For now, let's use the state value.
+                setIsOwner(prev => {
+                    if (newMode === 'view' && !prev) quill.disable()
+                    else quill.enable()
+                    return prev
+                })
             } else {
                 quill.enable()
             }
         })
 
         socket.emit("get-document", documentId)
-    }, [socket, quill, documentId, isOwner])
+        console.log(`Requested document: ${documentId}`)
+
+        const loadingTimeout = setTimeout(() => {
+            if (quill && quill.getText().trim() === "Loading...") {
+                console.warn("Document load is taking longer than expected. Check server logs and socket connection.")
+            }
+        }, 5000)
+
+        return () => {
+            socket.off("load-document", handler)
+            socket.off("active-users")
+            socket.off("permission-updated")
+        }
+    }, [socket, quill, documentId])
 
     useEffect(() => {
         if (socket == null || quill == null) return
