@@ -14,6 +14,17 @@ api.interceptors.request.use(config => {
         config.headers['x-auth-token'] = token;
     }
     return config;
-}, error => Promise.reject(error));
+}, error => {
+    console.error('API Request Error:', error.response || error);
+    return Promise.reject(error);
+});
+
+api.interceptors.response.use(
+    response => response,
+    error => {
+        console.error('API Response Error:', error.response || error);
+        return Promise.reject(error);
+    }
+);
 
 export default api;

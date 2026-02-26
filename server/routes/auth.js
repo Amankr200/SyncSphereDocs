@@ -23,6 +23,7 @@ router.post(
         }
 
         const { name, email, password } = req.body;
+        console.log(`Registration attempt for: ${email}`);
 
         try {
             let user = await User.findOne({ email });
@@ -58,7 +59,7 @@ router.post(
                 }
             );
         } catch (err) {
-            console.error(err.message);
+            console.error('Registration Error:', err.message);
             res.status(500).send('Server error');
         }
     }
@@ -80,6 +81,7 @@ router.post(
         }
 
         const { email, password } = req.body;
+        console.log(`Login attempt for: ${email}`);
 
         try {
             let user = await User.findOne({ email });
@@ -110,7 +112,7 @@ router.post(
                 }
             );
         } catch (err) {
-            console.error(err.message);
+            console.error('Login Error:', err.message);
             res.status(500).send('Server error');
         }
     }
@@ -125,7 +127,7 @@ router.get('/me', auth, async (req, res) => {
         const user = await User.findById(req.user.id).select('-passwordHash');
         res.json(user);
     } catch (err) {
-        console.error(err.message);
+        console.error('Auth Me Error:', err.message);
         res.status(500).send('Server Error');
     }
 });

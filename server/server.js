@@ -13,8 +13,9 @@ const { createAdapter } = require("@socket.io/redis-adapter")
 
 const app = express()
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST"],
+    origin: true, // Reflect the request origin
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"],
     credentials: true
 }))
 app.use(express.json())
