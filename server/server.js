@@ -17,7 +17,7 @@ app.use(cors({
     methods: ["GET", "POST"],
     credentials: true
 }))
-app.use(express.json({ extended: false }))
+app.use(express.json())
 
 // Logging Middleware
 app.use((req, res, next) => {
@@ -134,7 +134,13 @@ io.on("connection", socket => {
             });
 
             socket.on("save-document", async data => {
-                await Document.findByIdAndUpdate(documentId, { data });
+                const doc = await Document.findById(documentId);
+                const isOwner = doc.owner && doc.owner.toString() === socket.user.id;
+
+                // Only allow saving if owner or if shared for editing
+                if (doc.shareMode === 'edit' || isOwner) {
+                    await Document.findByIdAndUpdate(documentId, { data });
+                }
             });
 
             // Cursor Tracking

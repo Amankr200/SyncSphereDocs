@@ -33,11 +33,7 @@ const DocumentSchema = new mongoose.Schema({
     version: {
         type: Number,
         default: 1
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model("Document", DocumentSchema)
