@@ -1,7 +1,5 @@
 # SyncSphereDocs | Real-Time Collaborative Workspace
 
-![SyncSphereDocs Banner](https://images.unsplash.com/photo-1512486133939-0c44c0ca9ddb?q=80&w=1200&auto=format&fit=crop)
-
 **SyncSphereDocs** is a premium, high-performance real-time collaborative document editing platform. Built with a modern MERN stack and optimized Socket.io communication, it provides a seamless "Google Docs-like" experience with advanced presence tracking and granular permission controls.
 
 ---
