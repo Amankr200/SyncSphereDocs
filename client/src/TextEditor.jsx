@@ -33,7 +33,8 @@ export default function TextEditor() {
         const token = localStorage.getItem('token')
         const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
         const s = io(socketUrl, {
-            auth: { token }
+            auth: { token },
+            transports: ['websocket', 'polling'] // Prefer websocket
         })
 
         s.on("connect", () => console.log("Socket connected:", s.id))
@@ -93,13 +94,18 @@ export default function TextEditor() {
         socket.emit("get-document", documentId)
         console.log(`Requested document: ${documentId}`)
 
-        const loadingTimeout = setTimeout(() => {
+        const loadingTimer = setInterval(() => {
             if (quill && quill.getText().trim() === "Loading...") {
-                console.warn("Document load is taking longer than expected. Check server logs and socket connection.")
+                console.warn(`[RETRY] Retrying get-document for: ${documentId}`)
+                socket.emit("get-document", documentId)
+            } else if (quill) {
+                console.log("Document text is now:", quill.getText().substring(0, 20))
+                clearInterval(loadingTimer)
             }
         }, 5000)
 
         return () => {
+            clearInterval(loadingTimer)
             socket.off("load-document", handler)
             socket.off("active-users")
             socket.off("permission-updated")

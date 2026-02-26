@@ -39,9 +39,13 @@ app.use('/api/documents', require('./routes/documents'));
 const server = http.createServer(app)
 const io = require("socket.io")(server, {
     cors: {
-        origin: process.env.FRONTEND_URL || "http://localhost:5173",
-        methods: ["GET", "POST"],
+        origin: true, // Dynamically trust the frontend origin
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        credentials: true
     },
+    transports: ['websocket', 'polling'], // Allow both
+    pingTimeout: 30000,
+    pingInterval: 10000
 })
 
 // Redis Adapter Setup
@@ -90,6 +94,8 @@ io.on("connection", socket => {
                 io.to(docId).emit("active-users", Array.from(users.values()));
             }
         }
+    }).catch(err => {
+        console.error("Error fetching user for socket:", err);
     });
 
     socket.on("get-document", async documentId => {
@@ -199,15 +205,20 @@ async function findOrCreateDocument(id, userId) {
 
     try {
         const document = await Document.findById(id)
-        if (document) return document
+        if (document) {
+            console.log(`Document ${id} found. Data type: ${typeof document.data}`);
+            return document;
+        }
 
         console.log(`Creating new document: ${id}`);
-        return await Document.create({
+        const newDoc = await Document.create({
             _id: id,
             data: defaultValue,
             owner: userId,
             title: "Untitled Document"
         })
+        console.log(`New document created: ${id}`);
+        return newDoc;
     } catch (err) {
         console.error("Database error in findOrCreateDocument:", err);
         throw err;
